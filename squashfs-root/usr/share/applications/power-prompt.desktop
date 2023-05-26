@@ -1,0 +1,8 @@
+[Desktop Entry]
+Categories=
+Comment=A Tauri App
+Exec=power-prompt
+Icon=power-prompt
+Name=power-prompt
+Terminal=false
+Type=Application
