@@ -9,6 +9,7 @@ fn shutdown() {
     Command::new("poweroff")
         .spawn()
         .expect("failed to power off");
+    close();
 }
 
 #[tauri::command]
@@ -17,11 +18,21 @@ fn logout() {
         .arg("Xorg")
         .spawn()
         .expect("Failed to log out");
+    close();
 }
 
 #[tauri::command]
 fn reboot() {
     Command::new("reboot").output().expect("Failed to reboot");
+    close();
+}
+
+#[tauri::command]
+fn close() {
+    Command::new("killall")
+        .arg("power-menu")
+        .spawn()
+        .expect("Failed to exit power-menu");
 }
 
 #[tauri::command]
@@ -30,11 +41,14 @@ fn suspend() {
         .arg("suspend")
         .spawn()
         .expect("Failed to reboot");
+    close();
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![shutdown, logout, reboot, suspend])
+        .invoke_handler(tauri::generate_handler![
+            shutdown, logout, reboot, suspend, close
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

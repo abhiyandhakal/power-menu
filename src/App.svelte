@@ -34,7 +34,7 @@
 		}
 		// quit
 		else if (e.key === "Escape") {
-			await appWindow.close();
+			await invoke("close");
 		}
 	});
 </script>
