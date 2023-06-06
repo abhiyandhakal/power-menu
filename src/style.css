@@ -46,3 +46,25 @@ button:active {
 button.active {
 	background: #444;
 }
+
+a {
+	color: unset;
+	text-decoration: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 1em;
+	position: absolute;
+}
+
+a .icon {
+	color: #aa0;
+}
+
+.settings {
+	--padding : 2rem;
+	font-size: 2rem;
+	color: #aa0;
+	top: var(--padding);
+	right: var(--padding);
+}
