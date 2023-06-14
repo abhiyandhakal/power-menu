@@ -14,8 +14,9 @@ fn shutdown() {
 
 #[tauri::command]
 fn logout() {
-    Command::new("killall")
-        .arg("Xorg")
+    Command::new("loginctl")
+        .arg("kill-user")
+        .arg("$USER")
         .spawn()
         .expect("Failed to log out");
     close();
