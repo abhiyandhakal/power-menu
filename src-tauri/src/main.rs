@@ -26,7 +26,7 @@ fn logout() {
 
 #[tauri::command]
 fn reboot() {
-    Command::new("reboot").output().expect("Failed to reboot");
+    Command::new("reboot").spawn().expect("Failed to reboot");
     close();
 }
 
