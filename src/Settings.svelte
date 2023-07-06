@@ -1,18 +1,27 @@
-<script>
+<script lang="ts">
 	import { invoke } from "@tauri-apps/api/tauri";
 	import { appWindow } from "@tauri-apps/api/window";
 
+	interface Config {
+		warn: boolean;
+	}
+
+	let config: Config;
+
 	(async function () {
-		console.log(await invoke("get_config"));
+		const res = await invoke("get_config");
+		config = res as Config;
 	})();
 
-	let warn = false;
+	let warn = true;
 
-	function emit() {
+	$: () => {
+		const to_send = { warn };
+
 		appWindow.emit("settings", {
-			message: "hello world from settings frontend",
+			message: to_send,
 		});
-	}
+	};
 </script>
 
 <h1>Settings</h1>
@@ -25,7 +34,7 @@
 			name="toggle"
 			class="toggle-checkbox"
 			id="warn"
-			on:click={emit}
+			bind:value={warn}
 		/>
 		<label for="warn" class="toggle-label" />
 	</div>
@@ -35,6 +44,8 @@
 	.toggle-container {
 		display: flex;
 		justify-content: space-between;
+		background: transparent;
 		font-size: 1.2rem;
+		background: red;
 	}
 </style>
