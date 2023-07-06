@@ -22,7 +22,6 @@
         "open": true
       },
       "window": {
-        "all": true,
         "hide": true,
         "center": true,
         "create": true
@@ -49,7 +48,6 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": false,
         "title": "Power Menu",
         "width": 800,
         "height": 450,

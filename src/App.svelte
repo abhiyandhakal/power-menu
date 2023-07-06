@@ -57,4 +57,3 @@
 		class={`big-btn ${id === current ? "active" : ""}`}>{content}</button
 	>
 {/each}
-

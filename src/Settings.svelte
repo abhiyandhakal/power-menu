@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { invoke } from "@tauri-apps/api/tauri";
 	import { appWindow } from "@tauri-apps/api/window";
-
-	interface Config {
-		warn?: boolean;
-	}
+	import type { Config } from "./vite-env";
 
 	let config: Config = {
 		warn: true,
@@ -16,8 +13,6 @@
 		if (config.warn === undefined) {
 			config.warn = true;
 		}
-
-		console.log(config.warn);
 	});
 
 	$: {

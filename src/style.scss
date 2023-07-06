@@ -8,10 +8,11 @@
 }
 
 body {
+  --padding: 1rem;
   background: var(--bg-primary);
   color: #ddd;
 
-  padding: 1rem;
+  padding: var(--padding);
 }
 
 h1 {
@@ -19,6 +20,25 @@ h1 {
   color: #aa8;
 
   text-align: center;
+}
+
+p {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.btn {
+  background: var(--bg-secondary);
+  color: inherit;
+  border: none;
+  padding: calc(var(--padding) / 1.5) var(--padding);
+  border-radius: 0.5em;
+  font-size: 1.2rem;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .big-btn {
@@ -131,4 +151,9 @@ a .icon {
 
 label {
   cursor: pointer;
+}
+
+.all-center {
+  display: grid;
+  place-items: center;
 }

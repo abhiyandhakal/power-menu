@@ -12,7 +12,7 @@ use std::{
 use serde_json::{json, Value};
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+// tauri commands
 #[tauri::command]
 fn shutdown() {
     Command::new("poweroff")
@@ -73,12 +73,8 @@ fn get_config() -> Value {
     let config_file = OpenOptions::new().read(true).open(get_config_file());
 
     match config_file {
-        Ok(file) => {
-            config = serde_json::from_reader(file).expect("Failed to parse config file");
-        }
-        Err(_) => {
-            println!("no config file found");
-        }
+        Ok(file) => config = serde_json::from_reader(file).expect("Failed to parse config file"),
+        Err(_) => println!("no config file found"),
     }
 
     config
@@ -103,7 +99,7 @@ fn main() {
         ("shutdown", "Shutdown"),
         ("suspend", "Suspend"),
         ("logout", "Logout"),
-        ("reboot", "Reboot"),
+        ("reboot", "Restart"),
         ("quit", "Quit"),
     ];
 
@@ -123,7 +119,6 @@ fn main() {
                 event.window().hide().expect("Failed to hide the window");
                 api.prevent_close();
             }
-
             _ => {}
         })
         .on_page_load(|window, _| {
@@ -146,13 +141,33 @@ fn main() {
                 }
                 "settings" => app
                     .get_window("settings")
-                    .expect("Failed to get new window")
+                    .expect("Failed to get settings window")
                     .show()
-                    .expect("Failed to show new window"),
-                "shutdown" => shutdown(),
-                "suspend" => suspend(),
-                "logout" => logout(),
-                "reboot" => reboot(),
+                    .expect("Failed to show settings window"),
+                "shutdown" => {
+                    app.get_window("shutdown_warning")
+                        .expect("Failed to get warning window")
+                        .show()
+                        .expect("Failed to show warning window");
+                }
+                "suspend" => {
+                    app.get_window("suspend_warning")
+                        .expect("Failed to get warning window")
+                        .show()
+                        .expect("Failed to show warning window");
+                }
+                "logout" => {
+                    app.get_window("logout_warning")
+                        .expect("Failed to get warning window")
+                        .show()
+                        .expect("Failed to show warning window");
+                }
+                "reboot" => {
+                    app.get_window("reboot_warning")
+                        .expect("Failed to get warning window")
+                        .show()
+                        .expect("Failed to show warning window");
+                }
                 _ => {}
             },
             _ => {}
@@ -171,7 +186,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            shutdown, logout, reboot, suspend, close, get_config
+            shutdown, logout, reboot, suspend, close, get_config,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
