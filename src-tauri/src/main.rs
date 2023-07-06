@@ -1,9 +1,15 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{env, fs::OpenOptions, process::Command};
+use std::{
+    env,
+    fs::{create_dir_all, File, OpenOptions},
+    io::Write,
+    path::PathBuf,
+    process::Command,
+};
 
-use serde_json::Value;
+use serde_json::{json, Value};
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -58,22 +64,13 @@ fn check_root() {
 
 #[tauri::command]
 fn get_config() -> Value {
-    // get home path
-    let home = env::var("HOME").expect("Failed to get home path");
-
-    let default_config = r#"
-    {
+    let default_config: Value = json!( {
         "warn": true
-    }
-        "#;
-
-    let default_config: Value = serde_json::from_str(default_config).expect("Failed to parse json");
+    });
 
     let mut config = default_config.clone();
 
-    let config_file = OpenOptions::new()
-        .read(true)
-        .open(format!("{}/.config/power-menu/config.json", home));
+    let config_file = OpenOptions::new().read(true).open(get_config_file());
 
     match config_file {
         Ok(file) => {
@@ -86,25 +83,6 @@ fn get_config() -> Value {
 
     config
 }
-
-// fn set_config(config: Value) {
-//     // get home path
-//     let home = env::var("HOME").expect("Failed to get home path");
-//
-//     let config_file = OpenOptions::new()
-//         .write(true)
-//         .create(true)
-//         .open(format!("{}/.config/power-menu/config.json", home));
-//
-//     match config_file {
-//         Ok(mut file) => {
-//             serde_json::to_writer_pretty(file, &config).expect("Failed to write to config file");
-//         }
-//         Err(_) => {
-//             println!("no config file found");
-//         }
-//     }
-// }
 
 fn main() {
     // check if power menu is open
@@ -121,6 +99,7 @@ fn main() {
 
     let menu_items = vec![
         ("show-hide", "Show / Hide"),
+        ("settings", "Settings"),
         ("shutdown", "Shutdown"),
         ("suspend", "Suspend"),
         ("logout", "Logout"),
@@ -152,9 +131,7 @@ fn main() {
         })
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    std::process::exit(0);
-                }
+                "quit" => std::process::exit(0),
                 "show-hide" => {
                     let window = app.get_window("main").expect("Failed to get main window");
 
@@ -167,13 +144,12 @@ fn main() {
                         window.show().expect("Failed to show the window");
                     }
                 }
-                // "shutdown" => shutdown(),
-                "shutdown" => {
-                    app.get_window("settings")
-                        .expect("Failed to get new window")
-                        .show()
-                        .expect("Failed to show new window");
-                }
+                "settings" => app
+                    .get_window("settings")
+                    .expect("Failed to get new window")
+                    .show()
+                    .expect("Failed to show new window"),
+                "shutdown" => shutdown(),
                 "suspend" => suspend(),
                 "logout" => logout(),
                 "reboot" => reboot(),
@@ -183,7 +159,13 @@ fn main() {
         })
         .setup(|app| {
             app.listen_global("settings", |event| {
-                println!("got event-name with payload {:?}", event.payload());
+                if let Some(config_str) = event.payload() {
+                    let config: Value = serde_json::from_str(config_str).expect("Failed to parse");
+
+                    if let Some(config) = config.get("message") {
+                        set_config(config.to_string());
+                    }
+                }
             });
 
             Ok(())
@@ -193,4 +175,47 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn get_config_dir() -> PathBuf {
+    match env::var_os("XDG_CONFIG_HOME") {
+        Some(dir) => PathBuf::from(dir).join("power-menu"),
+        None => {
+            let config_path: PathBuf = dirs::home_dir()
+                .expect("Failed to get home path")
+                .join(".config")
+                .join("power-menu");
+
+            config_path
+        }
+    }
+}
+
+fn get_config_file() -> PathBuf {
+    get_config_dir().join("config.json")
+}
+
+fn set_config(config: String) {
+    let config_file_path = get_config_file();
+
+    let mut config_file = if config_file_path.exists() {
+        OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(get_config_file())
+            .expect("Failed to get config file")
+    } else {
+        println!("path: {:?}", config_file_path);
+
+        if get_config_dir().is_dir() {
+            File::create(config_file_path).expect("Failed to create config file")
+        } else {
+            create_dir_all(get_config_dir()).expect("Failed to create config dir");
+            File::create(config_file_path).expect("Failed to create config file")
+        }
+    };
+
+    config_file
+        .write_all(config.as_bytes())
+        .expect("Failed to write to config file");
 }

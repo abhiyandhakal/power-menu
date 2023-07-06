@@ -3,25 +3,28 @@
 	import { appWindow } from "@tauri-apps/api/window";
 
 	interface Config {
-		warn: boolean;
+		warn?: boolean;
 	}
 
-	let config: Config;
-
-	(async function () {
-		const res = await invoke("get_config");
-		config = res as Config;
-	})();
-
-	let warn = true;
-
-	$: () => {
-		const to_send = { warn };
-
-		appWindow.emit("settings", {
-			message: to_send,
-		});
+	let config: Config = {
+		warn: true,
 	};
+
+	invoke("get_config").then((res) => {
+		config = res as Config;
+
+		if (config.warn === undefined) {
+			config.warn = true;
+		}
+
+		console.log(config.warn);
+	});
+
+	$: {
+		appWindow.emit("settings", {
+			message: config,
+		});
+	}
 </script>
 
 <h1>Settings</h1>
@@ -34,7 +37,7 @@
 			name="toggle"
 			class="toggle-checkbox"
 			id="warn"
-			bind:value={warn}
+			bind:checked={config.warn}
 		/>
 		<label for="warn" class="toggle-label" />
 	</div>
