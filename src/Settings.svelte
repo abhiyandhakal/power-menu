@@ -39,13 +39,3 @@
 		<label for="warn" class="toggle-label" />
 	</div>
 </div>
-
-<style lang="scss">
-	.toggle-container {
-		display: flex;
-		justify-content: space-between;
-		background: transparent;
-		font-size: 1.2rem;
-		background: red;
-	}
-</style>

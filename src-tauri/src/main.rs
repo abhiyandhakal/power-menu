@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{env, fmt::format, fs::OpenOptions, process::Command};
+use std::{env, fs::OpenOptions, process::Command};
 
 use serde_json::Value;
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
@@ -69,23 +69,42 @@ fn get_config() -> Value {
 
     let default_config: Value = serde_json::from_str(default_config).expect("Failed to parse json");
 
+    let mut config = default_config.clone();
+
     let config_file = OpenOptions::new()
         .read(true)
         .open(format!("{}/.config/power-menu/config.json", home));
 
-    // match config_file {
-    //     Ok(file) => {
-    //         let config: Value = serde_json::from_reader(file).expect("Failed to parse config file");
-    //
-    //         println!("config: {:?}", config);
-    //     }
-    //     Err(_) => {
-    //         println!("no config file found");
-    //     }
-    // }
+    match config_file {
+        Ok(file) => {
+            config = serde_json::from_reader(file).expect("Failed to parse config file");
+        }
+        Err(_) => {
+            println!("no config file found");
+        }
+    }
 
-    default_config
+    config
 }
+
+// fn set_config(config: Value) {
+//     // get home path
+//     let home = env::var("HOME").expect("Failed to get home path");
+//
+//     let config_file = OpenOptions::new()
+//         .write(true)
+//         .create(true)
+//         .open(format!("{}/.config/power-menu/config.json", home));
+//
+//     match config_file {
+//         Ok(mut file) => {
+//             serde_json::to_writer_pretty(file, &config).expect("Failed to write to config file");
+//         }
+//         Err(_) => {
+//             println!("no config file found");
+//         }
+//     }
+// }
 
 fn main() {
     // check if power menu is open
@@ -163,12 +182,9 @@ fn main() {
             _ => {}
         })
         .setup(|app| {
-            //
             app.listen_global("settings", |event| {
                 println!("got event-name with payload {:?}", event.payload());
             });
-
-            println!("hwelllloladsfj;lsdkjlf");
 
             Ok(())
         })
