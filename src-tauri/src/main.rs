@@ -10,7 +10,7 @@ use std::{
 };
 
 use serde_json::{json, Value};
-use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{App, AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 // tauri commands
 #[tauri::command]
@@ -144,30 +144,10 @@ fn main() {
                     .expect("Failed to get settings window")
                     .show()
                     .expect("Failed to show settings window"),
-                "shutdown" => {
-                    app.get_window("shutdown_warning")
-                        .expect("Failed to get warning window")
-                        .show()
-                        .expect("Failed to show warning window");
-                }
-                "suspend" => {
-                    app.get_window("suspend_warning")
-                        .expect("Failed to get warning window")
-                        .show()
-                        .expect("Failed to show warning window");
-                }
-                "logout" => {
-                    app.get_window("logout_warning")
-                        .expect("Failed to get warning window")
-                        .show()
-                        .expect("Failed to show warning window");
-                }
-                "reboot" => {
-                    app.get_window("reboot_warning")
-                        .expect("Failed to get warning window")
-                        .show()
-                        .expect("Failed to show warning window");
-                }
+                "shutdown" => power_action(app, "shutdown"),
+                "suspend" => power_action(app, "suspend"),
+                "logout" => power_action(app, "logout"),
+                "reboot" => power_action(app, "reboot"),
                 _ => {}
             },
             _ => {}
@@ -233,4 +213,33 @@ fn set_config(config: String) {
     config_file
         .write_all(config.as_bytes())
         .expect("Failed to write to config file");
+}
+
+fn power_action(app: &AppHandle, action: &str) {
+    let config: Value = get_config();
+
+    if let Some(warn) = config.get("warn") {
+        if warn.as_bool().unwrap_or(true) {
+            let warning_window = match action {
+                "shutdown" => "shutdown_warning",
+                "suspend" => "suspend_warning",
+                "logout" => "logout_warning",
+                "reboot" => "reboot_warning",
+                _ => "",
+            };
+
+            app.get_window(warning_window)
+                .expect("Failed to get warning window")
+                .show()
+                .expect("Failed to show warning window");
+        } else {
+            match action {
+                "shutdown" => shutdown(),
+                "suspend" => suspend(),
+                "logout" => logout(),
+                "reboot" => reboot(),
+                _ => {}
+            }
+        }
+    }
 }
