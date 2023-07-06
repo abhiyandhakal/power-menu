@@ -1,57 +1,60 @@
 {
-	"build": {
-		"beforeDevCommand": "yarn dev",
-		"beforeBuildCommand": "yarn build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist",
-		"withGlobalTauri": false
-	},
-	"package": {
-		"productName": "power-menu",
-		"version": "0.1.1"
-	},
-	"tauri": {
-		"systemTray": {
-			"iconPath": "icons/icon.png",
-			"iconAsTemplate": true
-		},
-		"allowlist": {
-			"all": false,
-			"shell": {
-				"all": false,
-				"open": true
-			},
-			"window": {
-				"hide": true
-			}
-		},
-		"bundle": {
-			"active": true,
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
-			"identifier": "com.powermenu.dev",
-			"targets": "all"
-		},
-		"security": {
-			"csp": null
-		},
-		"updater": {
-			"active": false
-		},
-		"windows": [
-			{
-				"fullscreen": false,
-				"resizable": false,
-				"title": "Power Menu",
-				"width": 800,
-				"height": 450,
-				"center": true
-			}
-		]
-	}
+  "build": {
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "power-menu",
+    "version": "0.1.1"
+  },
+  "tauri": {
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": true,
+        "hide": true,
+        "center": true,
+        "create": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "com.powermenu.dev",
+      "targets": "all"
+    },
+    "security": {
+      "csp": null
+    },
+    "updater": {
+      "active": false
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": false,
+        "title": "Power Menu",
+        "width": 800,
+        "height": 450,
+        "center": true
+      }
+    ]
+  }
 }
