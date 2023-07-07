@@ -57,18 +57,15 @@ p {
   cursor: pointer;
 
   margin-block: calc(var(--padding) / 2);
+
+  &:focus {
+    outline: 1px solid #449;
+    background: #444;
+  }
 }
 
 .big-btn:hover {
   opacity: 0.8;
-}
-
-.big-btn:active {
-  background: #444;
-}
-
-.big-btn.active {
-  background: #444;
 }
 
 a {

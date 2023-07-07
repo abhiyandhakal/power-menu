@@ -22,6 +22,7 @@
         "open": true
       },
       "window": {
+        "show": true,
         "hide": true,
         "center": true,
         "create": true
