@@ -22,9 +22,11 @@ fn shutdown() {
 
 #[tauri::command]
 fn logout() {
+    let user = env::var("USER").unwrap();
+
     Command::new("loginctl")
         .arg("kill-user")
-        .arg("$USER")
+        .arg(user)
         .spawn()
         .expect("Failed to log out");
 }
