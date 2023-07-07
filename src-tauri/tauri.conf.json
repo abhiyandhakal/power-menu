@@ -11,11 +11,21 @@
     "version": "0.1.2"
   },
   "tauri": {
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "allowlist": {
       "all": false,
       "shell": {
         "all": false,
         "open": true
+      },
+      "window": {
+        "show": true,
+        "hide": true,
+        "center": true,
+        "create": true
       }
     },
     "bundle": {
@@ -39,10 +49,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": false,
         "title": "Power Menu",
         "width": 800,
-        "height": 450
+        "height": 450,
+        "center": true
       }
     ]
   }

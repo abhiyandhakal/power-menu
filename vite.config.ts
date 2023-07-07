@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -32,5 +33,15 @@ export default defineConfig(async () => ({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        settings: resolve(__dirname, "settings.html"),
+        warning_shutdown: resolve(__dirname, "warnings/shutdown.html"),
+        warning_suspend: resolve(__dirname, "warnings/suspend.html"),
+        warning_logout: resolve(__dirname, "warnings/logout.html"),
+        warning_reboot: resolve(__dirname, "warnings/reboot.html"),
+      },
+    },
   },
 }));
