@@ -23,6 +23,9 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Project version**:
+[eg: 1.0.0]
+
 **Tools version**
 Cargo: [eg. 1.70.0]
 
