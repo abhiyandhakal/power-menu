@@ -96,21 +96,26 @@ fn main() {
     if is_running {}
 
     let menu_items = vec![
-        ("show-hide", "Show / Hide"),
-        ("settings", "Settings"),
-        ("shutdown", "Shutdown"),
-        ("suspend", "Suspend"),
-        ("logout", "Logout"),
-        ("reboot", "Restart"),
-        ("quit", "Quit"),
+        ("show-hide", "Show / Hide", true),
+        ("settings", "Settings", true),
+        ("shutdown", "Shutdown", false),
+        ("suspend", "Suspend", false),
+        ("logout", "Logout", false),
+        ("reboot", "Restart", true),
+        ("quit", "Quit", false),
     ];
 
-    let tray_menu = menu_items
-        .into_iter()
-        .fold(SystemTrayMenu::new(), |menu, (name, label)| {
-            menu.add_item(CustomMenuItem::new(name, label))
-                .add_native_item(tauri::SystemTrayMenuItem::Separator)
-        });
+    let tray_menu = menu_items.into_iter().fold(
+        SystemTrayMenu::new(),
+        |menu, (name, label, has_separator)| {
+            if has_separator {
+                menu.add_item(CustomMenuItem::new(name, label))
+                    .add_native_item(tauri::SystemTrayMenuItem::Separator)
+            } else {
+                menu.add_item(CustomMenuItem::new(name, label))
+            }
+        },
+    );
 
     let system_tray = SystemTray::new().with_menu(tray_menu);
 
